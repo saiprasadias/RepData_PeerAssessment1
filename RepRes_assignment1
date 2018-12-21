@@ -60,27 +60,18 @@ Note that there are a number of days/intervals where there are missing
 values (coded as NA).
 Calculate and report the total number of missing values (i.e. NAs)
 
+``` { r, echo = TRUE }
 actv <- a
 missingvals <- sum(is.na(actv$steps))
 print(c("Total Missing Values", missingvals))
-
-## Devise a strategy for filling in all of the missing values in the dataset. 
-## you could use mean/median for that day/5-minute interval, etc.
-## Create a new dataset that is equal to the original dataset but with the 
-## missing data filled in.
 
 for (i in 1:dim(actv)[1]) {
      if (is.na(actv[i,1] ) )
      {
        const <- filter(stp_int, interval == actv[i,3])
        actv[i,1] <- const[1,2]
-     } ## end of if
-  
-} ## End of for loop
-
-Make a histogram of the total number of steps taken each day and 
-Calculate and report the mean and median total number of steps taken 
-per day. 
+     } 
+}
 
 dailysteps <- actv %>% group_by(date) %>% summarise(sum(steps))
 names(dailysteps)[2] <- 'totalsteps'
@@ -90,5 +81,30 @@ mediandailysteps <- summary(dailysteps$totalsteps)[3]
 meandailysteps <- summary(dailysteps$totalsteps)[4]
 print(c('Mean Daily Steps after replacement=', meandailysteps))
 print(c('Median Daily Steps after replacement =', mediandailysteps))
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+Create a new factor variable in the dataset with two levels – “weekday” 
+and “weekend” indicating whether a given date is a weekday or weekend 
+day. Make a panel plot containing a time series plot  (i.e.type="l") 
+of the 5-minute interval (x-axis) and the average number of steps taken, 
+averaged across all weekday days or weekend days (y-axis). 
+
+``` { r, echo = TRUE }
+actv <- mutate(actv, dday = case_when( 
+        weekdays(date) %in% c("Monday", "Tuesday", "Wednesday", "Thursday", 
+                          "Friday") ~ "weekday", 
+    weekdays(date) %in% c("Saturday", "Sunday") ~ "weekend" ) )
+
+stp_week <- actv %>% group_by(dday, interval) %>% 
+            summarise(week_steps =  mean(steps) )
+par(mfrow = c(1,2) )
+qplot(interval, week_steps, data=stp_week, facets=.~dday, 
+      geom = c("line"))
+```
+
+
+
+
+
