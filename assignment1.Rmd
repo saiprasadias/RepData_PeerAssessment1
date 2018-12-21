@@ -97,7 +97,7 @@ averaged across all weekday days or weekend days (y-axis).
 
 ```{r, echo=TRUE}   
 actv <- mutate(actv, dday = case_when(     
-    weekdays(date) %in% c("Monday", "Tuesday", "Wednesday", "Thursday",           "Friday") ~ "weekday",     
+    weekdays(date) %in% c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday") ~ "weekday",     
     weekdays(date) %in% c("Saturday", "Sunday") ~ "weekend" ) )    
   
 stp_week <- actv %>% group_by(dday, interval) %>%     
